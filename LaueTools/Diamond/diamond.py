@@ -36,7 +36,7 @@ if sys.version_info.major == 3:
     from .. import CrystalParameters as CP
     from ..generaltools import norme_vec as norme
     from .. import generaltools as GT
-    from .. import tifffile as TIFF
+    #from .. import tifffile as TIFF
     from . import spec_reader as SR
 
     # WARNING  looped imports
@@ -52,7 +52,7 @@ else:
     import generaltools as GT
     from . import multigrain as MG
     from . import spec_reader as SR
-    from .. import tifffile as TIFF
+    #from .. import tifffile as TIFF
 
 
 def fromimageindexTothf(imageindex, scan):
@@ -1811,7 +1811,7 @@ def build_mosaic_and_fit_spot_position(indimg,
 
         print("filename for output mosaic image", imagefilename)
 
-        TIFF.imsave(imagefilename, mosaic2)
+        #TIFF.imsave(imagefilename, mosaic2)
 
     #        out.show()
     #
