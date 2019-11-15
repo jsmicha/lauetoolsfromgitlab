@@ -897,10 +897,8 @@ def build_spotlistref_sample(filefit_sample_max_npeaks=None,
 
     outfilename = filedat_sample.split(".dat")[0] + "_spotlistref_with_harmonics.dat"
     print("spotlistref saved in :", outfilename)
-    outputfile = open(outfilename, "w")
-    outputfile.write(header)
-    np.savetxt(outputfile, data_new, fmt="%.3f")
-    outputfile.close()
+    with open(outfilename, "wb") as outputfile:
+        np.savetxt(outputfile, data_new, fmt="%.3f", header=header, comments='')
 
     return outfilename
 
@@ -1677,11 +1675,8 @@ def build_mosaic_and_fit_spot_position(indimg,
     header += "\n"
     header2 += "\n"
 
-    outputfile = open(outfilename, "w")
-    outputfile.write(header)
-    outputfile.write(header2)
-    np.savetxt(outputfile, toto, fmt="%6.2f")
-    outputfile.close()
+    with open(outfilename, "wb") as outputfile :
+        np.savetxt(outputfile, toto, fmt="%6.2f", header=header+header2, comments='')
 
     if fit_xyprofiles_of_sumimage:
 
@@ -1985,28 +1980,29 @@ def build_Ipix_vs_img_table(indimg,
         header = header + " Ipix" + str(i)
     header = header + "\n"
     print(header)
+
+
+    footer = "#first image file :" + firstimfile + "\n"
+    footer += "#warning : xpic ypic from LaueTools peak search, shifted by +1 +1 from Imagej display \n"
+    str1 = " ".join(str(e) for e in xy_LT[:, 0])
+    footer += "#xpic_list : " + str1 + "\n"
+    str1 = " ".join(str(e) for e in xy_LT[:, 1])
+    footer += "#ypic_list : " + str1 + "\n"
+    str1 = " ".join(str(e) for e in xy_raw[:, 0])
+    footer += "#xpic_raw_list : " + str1 + "\n"
+    str1 = " ".join(str(e) for e in xy_raw[:, 1])
+    footer += "#ypic_raw_list : " + str1 + "\n"
+    
+    if user_comment is not None:
+        footer += user_comment
+        print(user_comment)
+
     print("filename for output results : \n", outfilename)
 
-    outputfile = open(outfilename, "w")
-    outputfile.write(header)
-    np.savetxt(outputfile, DipsData, fmt="%6.0f")
-    tailer = "#first image file :" + firstimfile + "\n"
-    outputfile.write(tailer)
-    str1 = "#warning : xpic ypic from LaueTools peak search, shifted by +1 +1 from Imagej display \n"
-    outputfile.write(str1)
-    str1 = " ".join(str(e) for e in xy_LT[:, 0])
-    outputfile.write("#xpic_list : " + str1 + "\n")
-    str1 = " ".join(str(e) for e in xy_LT[:, 1])
-    outputfile.write("#ypic_list : " + str1 + "\n")
-    str1 = " ".join(str(e) for e in xy_raw[:, 0])
-    outputfile.write("#xpic_raw_list : " + str1 + "\n")
-    str1 = " ".join(str(e) for e in xy_raw[:, 1])
-    outputfile.write("#ypic_raw_list : " + str1 + "\n")
+    with open(outfilename, "wb") as outputfile:
+        np.savetxt(outputfile, DipsData, fmt="%6.0f", header=header, footer=footer, comments='')
 
-    print(user_comment)
 
-    if user_comment is not None:
-        outputfile.write(user_comment)
 
     outputfile.close()
 
@@ -2599,10 +2595,9 @@ def plot_Ipix_vs_img(file_Ipix_vs_img=None,
         print(np.shape(list_diplinks_theor))
         outputfilename_filediplinks = filedipstheor.rstrip(".dat") + "_diplinks_theor.dat"
         print("diplinks theor saved in : ", outputfilename_filediplinks)
-        outputfile = open(outputfilename_filediplinks, "w")
-        outputfile.write(header)
-        np.savetxt(outputfile, list_diplinks_theor, fmt="%d")
-        outputfile.close()
+        
+        with open(outputfilename_filediplinks, "wb") as outputfile:
+            np.savetxt(outputfile, list_diplinks_theor, fmt="%d", header=header, comments='')
 
         # pickle file
         data_pickled = (header,list_diplinks_theor)
@@ -2704,11 +2699,10 @@ def save_spot_results(
         )
     header += "#File created at %s with diamond.py \n" % (time.asctime())
     header += "#" + column_list + "\n"
-    outputfile = open(filename, "w")
-    outputfile.write(header)
-    np.savetxt(outputfile, spotlist, fmt="%.4f")
-    outputfile.write(user_comment)
-    outputfile.close()
+    
+    with open(filename, "wb") as outputfile:
+        np.savetxt(outputfile, spotlist, fmt="%.4f", header=header, footer=user_comment, comments='')
+
 
     #    print "spotlist saved in :"
     #    print filename
@@ -2761,7 +2755,7 @@ def build_diamond_spotlist_360_v2(thf_list,
                 hklref, hkl2, dxytol=dxytol, verbose=0)
             ind2 = np.where(iscommon2 == 0)
             if len(ind2[0]) > 0:
-                nspots = len(ind2[0])
+                nspots = len(ind2[0])# Description of parameters : 
                 toto = thf * np.ones(nspots, float)
                 spotlistnew = np.column_stack((spotlist2[ind2[0]], toto))
                 spotlistref = np.row_stack((spotlistref, spotlistnew))
@@ -3518,8 +3512,9 @@ def plot_Edia_vs_thf(fileEdia,
 
     # loop over branch index
     diabranchesdata = []
+    print("list_ndia",list_ndia)
     for i_branch in list_ndia:
-        #        print "i = ", i
+        print( "i_branch = ", i_branch)
         fpol_list = np.array(dict_Edia[i_branch][ind_fpol], dtype=float)
         Edia_list = np.array(dict_Edia[i_branch][ind_Edia], dtype=float) / 1000.0
         ind0 = np.where(Edia_list > 0.1)

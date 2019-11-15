@@ -2402,7 +2402,7 @@ def save_fit_results(filename,
                      matLT_UB = eye(3),
                      Bmatrix = eye(3)   
                      ):
-                         
+
     pixelsize = DictLT.dict_CCD[CCDlabel][1]
     dim = DictLT.dict_CCD[CCDlabel][0]
     
@@ -2436,73 +2436,70 @@ def save_fit_results(filename,
     header += '# pixdev : %s \n' %str(round(pixdev, 4))
     
     if shape(datatooutput)[1] == 9 :
-        header += 'spot# Intensity h k l  pixDev xexp yexp Etheor\n'
+        header += 'spot# Intensity h k l  pixDev xexp yexp Etheor'
     elif shape(datatooutput)[1] == 17 :
-        header += 'spot# Intensity h k l  pixDev xexp yexp Etheor htwin ktwin ltwin is_from_crystal_5col \n'
-    outputfile = open(outputfilename, 'w')
-    outputfile.write(header)
-    np.savetxt(outputfile, datatooutput, fmt='%.4f')    
-    outputfile.write("#UB matrix in q= (UB) B0 G*\n")
-    outputfile.write(str(matLT_UB) + '\n')
-    outputfile.write("#B0 matrix in q= UB (B0) G*\n")
-    outputfile.write(str(Bmatrix) + '\n')
-    outputfile.write('#UBB0 matrix in q= (UB B0) G*\n')
-    outputfile.write(str(matLT_UBB03x3) + '\n')
-    outputfile.write('#deviatoric strain crystal (1e-3 units)\n')
-    outputfile.write(str(deviatoricstrain) + '\n') 
-    outputfile.write('#deviatoric strain sample (1e-3 units)\n')
-    outputfile.write(str(deviatoricstrainsample) + '\n')
-    text = "#omega_sample_frame \n"
-    text += str(round(PAR.omega_sample_frame, 2)) + '\n'
-    outputfile.write(text)        
-    outputfile.write('#Euler angles phi theta psi (deg)\n')
-    outputfile.write(str(euler) + '\n')
-    outputfile.write('#grain number\n')
-    outputfile.write(str(grainnum) + '\n')
-    text = "#Number of indexed spots \n"
-    text += str(shape(data_fit)[0]) + "\n"
-    outputfile.write(text)
-    text = "#pixdev\n"
-    text += str(round(pixdev, 4)) + '\n'
-    outputfile.write(text)
+        header += 'spot# Intensity h k l  pixDev xexp yexp Etheor htwin ktwin ltwin is_from_crystal_5col'
+    
+    footer = "#UB matrix in q= (UB) B0 G*\n"
+    footer += str(matLT_UB) + '\n'
+    footer += "#B0 matrix in q= UB (B0) G*\n"
+    footer += str(Bmatrix) + '\n'
+    footer += '#UBB0 matrix in q= (UB B0) G*\n'
+    footer += str(matLT_UBB03x3) + '\n'
+    footer += '#deviatoric strain crystal (1e-3 units)\n'
+    footer += str(deviatoricstrain) + '\n'
+    footer += '#deviatoric strain sample (1e-3 units)\n'
+    footer += str(deviatoricstrainsample) + '\n'
+    footer += "#omega_sample_frame \n"
+    footer += str(round(PAR.omega_sample_frame, 2)) + '\n'
+    footer += '#Euler angles phi theta psi (deg)\n'
+    footer += str(euler) + '\n'
+    footer += '#grain number\n'
+    footer += str(grainnum) + '\n'
+    footer += "#Number of indexed spots \n"
+    footer += str(shape(data_fit)[0]) + "\n"
+    footer +=  "#pixdev\n"
+    footer += str(round(pixdev, 4)) + '\n'
+    
+
+    
     # MAR
     # pixelsize = 165. / 2048
     # dim = (2048.0, 2048.0)
     # VHR
 ##    pixelsize = 0.031
 ##    dim = (2594.0, 3764.0)
-    text = "#Sample-Detector distance (IM), xO, yO, angle1, angle2, pixelsize, dim1, dim2\n"    
+    footer +=  "#Sample-Detector distance (IM), xO, yO, angle1, angle2, pixelsize, dim1, dim2\n"    
     dd, xcen, ycen, xbet, xgam = calib[0], calib[1], calib[2], calib[3], calib[4]
-    text += "%.3f, %.2f, %.2f, %.3f, %.3f, %.5f, %.0f, %.0f\n" % (round(dd, 3), round(xcen, 2), round(ycen, 2), \
+    footer +=  "%.3f, %.2f, %.2f, %.3f, %.3f, %.5f, %.0f, %.0f\n" % (round(dd, 3), round(xcen, 2), round(ycen, 2), \
                         round(xbet, 3), round(xgam, 3), pixelsize, round(dim[0], 0), round(dim[1], 0))
-    outputfile.write(text)
- 
-    text = "# Notes on reference frames" + '\n'
-    text += "# UBB0 : astar, bstar, cstar as columns on Rlab_LT " + '\n'
-    text += "# norme(astar) = norme(first column of B0)" + '\n'
-    text += "# Rlab_LT :" + '\n'
-    text += "# xlab along incident beam, " + '\n'
-    text += "# ylab along cross(zcam,xlab)" + '\n'
-    text += "# zcam along inner normal to camera screen (upwards)" + '\n'
-    text += "# B0 : Bstar matrix of undeformed reciprocal crystal unit cell" + '\n'
-    text += "# (direct unit cell is defined in DictLaueTools.py)" + '\n'
-    text += "# B0 = astar, bstar, cstar as columns on astarOND bstarOND cstarOND" + '\n'
-    text += "# astarOND, bstarOND, cstarOND = cartesian frame attached to reciprocal crystal unit cell" + '\n'
-    text += "# OND  = orthonorme direct" + '\n'
-    text += "# deviatoric strain crystal : strain in cartesian frame attached to direct crystal unit cell" + '\n'
-    text += "# deviatoric strain sample : strain in Rsample_MG frame" + '\n'
-    text += "# Rlab_MG :" + '\n' 
-    text += "# ylab along incident beam," + '\n' 
-    text += "# xlab along cross(ylab, zcam)" + '\n'
-    text += "# Rsample_MG :" + '\n'
-    text += "# almost aligned with -xech -yech zech sample scanning linear stages for BM32ESRF" + '\n'
-    text += "# zech along outer normal to sample surface" + '\n'
-    text += "# deduced from Rlab_MG by positive rotation around xlab" + '\n'
-    text += "# with an angle omega_sample_frame in degrees" + '\n' 
+    footer += "# Notes on reference frames" + '\n'
+    footer += "# UBB0 : astar, bstar, cstar as columns on Rlab_LT " + '\n'
+    footer += "# norme(astar) = norme(first column of B0)" + '\n'
+    footer += "# Rlab_LT :" + '\n'
+    footer += "# xlab along incident beam, " + '\n'
+    footer += "# ylab along cross(zcam,xlab)" + '\n'
+    footer += "# zcam along inner normal to camera screen (upwards)" + '\n'
+    footer += "# B0 : Bstar matrix of undeformed reciprocal crystal unit cell" + '\n'
+    footer += "# (direct unit cell is defined in DictLaueTools.py)" + '\n'
+    footer += "# B0 = astar, bstar, cstar as columns on astarOND bstarOND cstarOND" + '\n'
+    footer += "# astarOND, bstarOND, cstarOND = cartesian frame attached to reciprocal crystal unit cell" + '\n'
+    footer += "# OND  = orthonorme direct" + '\n'
+    footer += "# deviatoric strain crystal : strain in cartesian frame attached to direct crystal unit cell" + '\n'
+    footer += "# deviatoric strain sample : strain in Rsample_MG frame" + '\n'
+    footer += "# Rlab_MG :" + '\n' 
+    footer += "# ylab along incident beam," + '\n' 
+    footer += "# xlab along cross(ylab, zcam)" + '\n'
+    footer += "# Rsample_MG :" + '\n'
+    footer += "# almost aligned with -xech -yech zech sample scanning linear stages for BM32ESRF" + '\n'
+    footer += "# zech along outer normal to sample surface" + '\n'
+    footer += "# deduced from Rlab_MG by positive rotation around xlab" + '\n'
+    footer += "# with an angle omega_sample_frame in degrees" + '\n' 
     
-    outputfile.write(text)    
-
-    outputfile.close()
+    with open(outputfilename, 'wb') as outputfile:
+        print("writing output")
+        np.savetxt(outputfile, datatooutput, fmt='%.4f', header=header, footer=footer, comments='')    
+        print("done writing output")
 
     return(outputfilename)
 
@@ -3626,11 +3623,11 @@ def read_any_fitfitfile_multigrain(filefitmg,
         list1 = []
         linestartspot = 10000
         lineendspot = 10000    
-            
+        print("linepos_list", linepos_list)
         while (i<(linepos_list[k+1]-linepos_list[k])):
             line = f.readline()
             i = i + 1
-            #print i
+            if verbose : print(i, line)
             if line.startswith(first_col_spot):
                 linecol = line.rstrip(PAR.cr_string)
                 linestartspot = i + 1
@@ -3667,7 +3664,7 @@ def read_any_fitfitfile_multigrain(filefitmg,
             if line.startswith(pixdev_name) :
                 #print line
                 if pixdev_code == 0 :
-                    pixdev[k] = float(line.rstrip(PAR.cr_string).split()[-1])
+                    pixdev[k] = float(line.replace('#', '').rstrip(PAR.cr_string).split()[-1])
                     if verbose : print("pixdev =", pixdev)
                 else :
                     pixdevfound = 1
@@ -3683,21 +3680,21 @@ def read_any_fitfitfile_multigrain(filefitmg,
                 lineeuler = i + 1
             if matrixfound :
                 if i in (linestartmat + 1, linestartmat + 2, linestartmat + 3) :
-                    toto = line.rstrip(PAR.cr_string).replace('[', '').replace(']', '').split()
+                    toto = line.rstrip(PAR.cr_string).replace('[', '').replace(']', '').replace('#', '').split()
                     #print toto
 #                    matLT3x3[j, :] = np.array(toto, dtype=float)
                     matLT3x3[j, :] = np.array(toto, dtype=float)
                     j = j + 1                                        
             if B0found :
                  if i in (linestartB0 + 1, linestartB0 + 2, linestartB0 + 3) :
-                    toto = line.rstrip(PAR.cr_string).replace('[', '').replace(']', '').split()
+                    toto = line.rstrip(PAR.cr_string).replace('[', '').replace(']', '').replace('#', '').split()
                     #print toto
 #                    matLT3x3[j, :] = np.array(toto, dtype=float)
                     B0mat[j, :] = np.array(toto, dtype=float)
                     j = j + 1  
             if orient_mat_found :  
                  if i in (linestartorientmat + 1, linestartorientmat + 2, linestartorientmat + 3) :
-                    toto = line.rstrip(PAR.cr_string).replace('[', '').replace(']', '').split()
+                    toto = line.rstrip(PAR.cr_string).replace('[', '').replace(']', '').replace('#', '').split()
                     #print toto
 #                    matLT3x3[j, :] = np.array(toto, dtype=float)
                     orientmat[j, :] = np.array(toto, dtype=float)
@@ -3705,7 +3702,7 @@ def read_any_fitfitfile_multigrain(filefitmg,
                         
             if strainfound :
                 if i in (linestrain + 1, linestrain + 2, linestrain + 3) :
-                    toto = line.rstrip(PAR.cr_string).replace('[', '').replace(']', '').split()
+                    toto = line.rstrip(PAR.cr_string).replace('[', '').replace(']', '').replace('#', '').split()
                     #print toto
                     strain[j, :] = np.array(toto, dtype=float)
                     j = j + 1                    
@@ -3719,34 +3716,37 @@ def read_any_fitfitfile_multigrain(filefitmg,
 #                print "calib_code = ", calib_code
 #                print line
                 if (calib_code == 1) & (i == linecalib) :
-                    calib[k,:] = np.array(line.replace('[', '').replace(']', '').split(',')[:5], dtype=float)
+                    calib[k,:] = np.array(line.replace('[', '').replace(']', '').replace('#', '').split(',')[:5], dtype=float)
                 elif (calib_code == 7) and (i in range(linecalib, linecalib+5)) :
-                    calib[k,j] = float(line.rstrip(PAR.cr_string).split()[-1])
+                    calib[k,j] = float(line.replace('#', '').rstrip(PAR.cr_string).split()[-1])
                     j = j+1                    
 #                print "calib = ", calib[k,:]
 
             if pixelsizefound & (i == linepixelsize) and check_pixdev :
-                pixelsize_fit = float(line.rstrip(PAR.cr_string))
+                pixelsize_fit = float(line.replace('#', '').rstrip(PAR.cr_string))
                 if verbose : print("pixelsize from fitfile = ", pixelsize_fit)
                 toto = abs(pixelsize_fit-pixelsize)
                 if toto > 0.0001 :
                     print("does not match pixelsize from MG.PAR.CCDlabel", pixelsize)
                     exhjkqsdq
             if eulerfound & (i == lineeuler):
-                euler[k,:] = np.array(line.replace('[', '').replace(']', '').split()[:3], dtype=float)
+                euler[k,:] = np.array(line.replace('[', '').replace(']', '').replace('#', '').split()[:3], dtype=float)
                 #print "euler = ", euler[k,:]
             if pixdevfound & (i == linepixdev):
-                pixdev[k] = float(line.rstrip(PAR.cr_string))
+                pixdev[k] = float(line.replace('#', '').rstrip(PAR.cr_string))
                 #print "pixdev = ", pixdev[k]
+            print("linestartspot",linestartspot,"lineendspot",lineendspot)
             if (i >= linestartspot) & (i < lineendspot) :
-                list1.append(line.rstrip(PAR.cr_string).replace('[', '').replace(']', '').split())
+                print(i,"spot data line")
+                list1.append(line.rstrip(PAR.cr_string).replace('[', '').replace(']', '').replace('#', '').split())
 
 #        print "list1 = ", list1
         data_fit = np.array(list1, dtype=float)
         npeaks[k]=shape(data_fit)[0]
         
-        verbose2 = 0
+        verbose2 = 1
         if verbose2 :
+            print("data_fit")
             print(np.shape(data_fit))
             print(data_fit[0, :])
             print(data_fit[-1, :])
@@ -3757,7 +3757,9 @@ def read_any_fitfitfile_multigrain(filefitmg,
                 print("current calib = ", calib)
         else :
             print("calib not found in file")
-            exit()
+            print(filefitmg)
+            print(calib_name)
+            #exit()
             
 #        TODO : re-ranger xy hkl pour
 
@@ -3794,6 +3796,7 @@ def read_any_fitfitfile_multigrain(filefitmg,
             
         if verbose : print("matLT3x3 =\n", matLT3x3)
         
+        print("min_matLT",min_matLT)
         if min_matLT :  
             matmin, transfmat = FindO.find_lowest_Euler_Angles_matrix(matLT3x3)
             matLT3x3 = matmin*1.
@@ -3812,7 +3815,7 @@ def read_any_fitfitfile_multigrain(filefitmg,
  
         if filetype == "GUI_strain" or filetype == "GUI_calib" :
             print("strain not read")  # pour eviter strain incorrect dans cas matLT_min = 1
-            
+        print("data_fit",data_fit)    
         hkl = data_fit[:, indh:indh+3] 
         xy = data_fit[:, indx:indx+2]
         
@@ -5327,6 +5330,7 @@ def index_refine_calib_one_image(filedat1,
         paramdetector_top = list(calib)
     else :
         paramdetector_top = list(fixedcalib)
+    print("start test_index_refine")
     filefit, filecor, npeaks_LT, pixdev_LT, matLTmin, calibLT = \
             test_index_refine(filedat1, 
                                  paramdetector_top,
