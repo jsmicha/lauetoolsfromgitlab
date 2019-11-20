@@ -893,7 +893,7 @@ def build_spotlistref_sample(filefit_sample_max_npeaks=None,
     header += "# orientation matrix from : %s \n" % (filefit_sample_min_pixdev)
     header += "# spot indexation from : %s \n" % (filefit_sample_max_npeaks)
     header += "# spot list from : %s \n" % (filedat_sample)
-    header += "numdat 0, xy_integer 1:3, xy_fit 3:5, hkl 5:8, Ipixmax 8, Etheor 9, uqlab 10:13 \n"
+    header += "numdat 0, xy_integer 1:3, xy_fit 3:5, hkl 5:8, Ipixmax 8, Etheor 9, uqlab 10:13"
 
     outfilename = filedat_sample.split(".dat")[0] + "_spotlistref_with_harmonics.dat"
     print("spotlistref saved in :", outfilename)
@@ -2765,7 +2765,7 @@ def build_diamond_spotlist_360_v2(thf_list,
         print("k =", k)
         print("nspots = ", np.shape(spotlistref)[0])
 
-    outputfilename = filepathdia + "spotlistref_all.dat"
+    outputfilename = os.path.join(filepathdia, "spotlistref_all.dat")
     print("spot list saved in : ", outputfilename)
 
     column_list = "E 0, hkl 1:4, uflab 4:7, tth 7, chi 8, thf 9 "  # , fpol 9, thf 10'
@@ -3053,6 +3053,7 @@ def build_dict_Edia_vs_thf(filespot,
     spotlist2 = MG.sort_list_decreasing_column(spotlist1, -1)
     nspots = np.shape(spotlist2)[0]
     print("number of spots :", nspots)
+    print(spotlist2)
 
     # nspots = 4
 
@@ -3063,7 +3064,7 @@ def build_dict_Edia_vs_thf(filespot,
     dict_Edia = {}
 
     for i in range(nspots):
-        dict_Edia[i] = [spotlist2[i, :3], spotlist2[i, -1]]
+        dict_Edia[i] = [spotlist2[i, 1:4], spotlist2[i, -1]]
 
     dict_values_names = ["hkldia",
                         "intensity_norm",
