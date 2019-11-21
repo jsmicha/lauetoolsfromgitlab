@@ -3551,12 +3551,13 @@ def read_any_fitfitfile_multigrain(filefitmg,
     nbgrains = 0
     linepos_list = []
     i = 0
+    print(extension)
     try:
         for line in f:
             toto = line.rstrip(PAR.cr_string)
-#            print toto
+            print(toto)
 #            print toto[-4:]
-            if ((toto.startswith("# Strain") or toto.startswith("# CCD")) and (toto.endswith(extension))) :
+            if ((toto.startswith("# Strain") or toto.startswith("#Strain") or toto.startswith("# CCD") or toto.startswith("#CCD")) and (toto.endswith(extension))) :
                 nbgrains = nbgrains + 1
                 linepos_list.append(i)
             i = i+1

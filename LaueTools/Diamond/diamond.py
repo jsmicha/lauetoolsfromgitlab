@@ -3449,13 +3449,13 @@ def plot_Edia_vs_thf(fileEdia,
 
     return (diabranchesdata, fig, figfilename)
     """
-    p.rcParams["figure.subplot.right"] = 0.85
-    p.rcParams["figure.subplot.left"] = 0.15
-    p.rcParams["figure.subplot.top"] = 0.85
-    p.rcParams["figure.subplot.bottom"] = 0.15
+    #p.rcParams["figure.subplot.right"] = 0.85
+    #p.rcParams["figure.subplot.left"] = 0.15
+    #p.rcParams["figure.subplot.top"] = 0.85
+    #p.rcParams["figure.subplot.bottom"] = 0.15
 
     #    p.rcParams['font.size']=30     # article
-    p.rcParams["font.size"] = 20  # article
+    p.rcParams["font.size"] = 10  # article
 
     if thf_in_scan is not None:
         thf_min = thf_in_scan[0]
@@ -3513,9 +3513,8 @@ def plot_Edia_vs_thf(fileEdia,
 
     # loop over branch index
     diabranchesdata = []
-    print("list_ndia",list_ndia)
+    #print("list_ndia",list_ndia)
     for i_branch in list_ndia:
-        print( "i_branch = ", i_branch)
         fpol_list = np.array(dict_Edia[i_branch][ind_fpol], dtype=float)
         Edia_list = np.array(dict_Edia[i_branch][ind_Edia], dtype=float) / 1000.0
         ind0 = np.where(Edia_list > 0.1)
@@ -3541,15 +3540,16 @@ def plot_Edia_vs_thf(fileEdia,
             ind2 = np.argmax(int_list)
 
             if CHECK_FPOL:
-                ax.scatter(thf_list[ind0[0]], int_list, marker="o", c=list_color, s=100)
+                ax.scatter(thf_list[ind0[0]], int_list, marker="+", c=list_color, s=100, zorder=0)
 
             else:
-                ax.scatter(Edia_list[ind0[0]], thf_list[ind0[0]], marker="o", c=list_color, s=50)
+                ax.scatter(Edia_list[ind0[0]], thf_list[ind0[0]], marker="+", c=list_color, s=10, zorder=0)
                 if show_lines:
                     linediabranch, = ax.plot(Edia_list[ind0[0]], thf_list[ind0[0]], "-",
                                                                         color=list_color[ind2],
                                                                         label=str(i_branch),
-                                                                        picker=0.5)
+                                                                        picker=0.5,
+                                                                        zorder = 0)
 
                 hkl = np.array(dict_Edia[i_branch][ind_hkldia].round(decimals=0), dtype=int)
                 label1 = str(hkl[0]) + str(hkl[1]) + str(hkl[2]) + " #" + str(i_branch)
@@ -3574,8 +3574,8 @@ def plot_Edia_vs_thf(fileEdia,
                         pos1 = np.argmax(xx1)
                         #                    pos1 = ind1[0][-1]  #old
                         # print pos1, xx1[pos1],yy1[pos1]
-                        ax.plot(xx[pos1], yy[pos1], "s", ms=20, mec="k", mfc="w", mew=3)
-                        ax.text(xx[pos1], yy[pos1], str(i_branch), fontsize=16, color="k",
+                        ax.plot(xx[pos1], yy[pos1], "s", ms=10, mec="k", mfc="w", mew=1)
+                        ax.text(xx[pos1], yy[pos1], str(i_branch), fontsize=8, color="k",
                                                             horizontalalignment="center",
                                                             verticalalignment="center")
                 else:
