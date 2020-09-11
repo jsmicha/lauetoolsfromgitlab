@@ -1576,10 +1576,13 @@ def peaksearch_fileseries(fileindexrange,
                             dirname_out=None,
                             CCDLABEL="MARCCD165",
                             KF_DIRECTION="Z>0",  # not used yet
-                            dictPeakSearch=None):
+                            dictPeakSearch=None,
+                            nbdigits_out = None):
     r"""
     peaksearch function to be called for multi or single processing
     """
+    
+    
     print('\n\n ***** Starting peaksearch_fileseries()  *****\n\n')
     # peak search Parameters update from .psp file
     if isinstance(dictPeakSearch, dict):
@@ -1607,6 +1610,10 @@ def peaksearch_fileseries(fileindexrange,
         # encodingdigits = "{" + ":0{}".format(int(nbdigits)) + "}"
         nbdigits = int(nbdigits)
 
+    if nbdigits_out == None:
+        nbdigits_out = nbdigits
+        
+        
     if suffix == "":
         suffix = ".mccd"
 
@@ -1733,7 +1740,7 @@ def peaksearch_fileseries(fileindexrange,
             # .dat file extension is done in writefile_Peaklist()
             # filename_out = prefix_outputname + encodingdigits % fileindex
             # TODO valid whatever
-            filename_out = prefix_outputname + str(fileindex).zfill(nbdigits)
+            filename_out = prefix_outputname + str(fileindex).zfill(nbdigits_out)
             IOLT.writefile_Peaklist("{}".format(filename_out),
                                         Isorted,
                                         overwrite=1,
@@ -1750,7 +1757,8 @@ def peaksearch_multiprocessing(fileindexrange, filenameprefix, suffix="", nbdigi
                                                     CCDLABEL="MARCCD165",
                                                     KF_DIRECTION="Z>0",
                                                     dictPeakSearch=None,
-                                                    nb_of_cpu=2):
+                                                    nb_of_cpu=2,
+                                                    nbdigits_out=None):
     r"""
     launch several processes in parallel
     """
@@ -1786,7 +1794,8 @@ def peaksearch_multiprocessing(fileindexrange, filenameprefix, suffix="", nbdigi
                                             dirname_out,
                                             CCDLABEL,
                                             KF_DIRECTION,
-                                            dictPeakSearch))
+                                            dictPeakSearch,
+                                            nbdigits_out))
         jobs.append(proc)
         proc.start()
 
