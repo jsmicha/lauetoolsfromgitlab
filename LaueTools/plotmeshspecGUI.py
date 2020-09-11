@@ -6,6 +6,21 @@ import os
 import sys
 import time
 
+import matplotlib as mpl
+
+#mpl.use("WXAgg")
+
+from matplotlib import __version__ as matplotlibversion
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_wxagg import (FigureCanvasWxAgg as FigCanvas,
+                                                    NavigationToolbar2WxAgg as NavigationToolbar)
+
+import matplotlib.colors as colors
+from matplotlib.axes import Axes
+from matplotlib.ticker import FuncFormatter
+
+from pylab import cm as pcm
+
 import wx
 
 # if wx.__version__ < "4.0.2":
@@ -34,20 +49,6 @@ else:
 
 import numpy as np
 
-import matplotlib as mpl
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_wxagg import (FigureCanvasWxAgg as FigCanvas,
-                                                    NavigationToolbar2WxAgg as NavigationToolbar)
-
-import matplotlib.colors as colors
-from matplotlib.axes import Axes
-from matplotlib.ticker import FuncFormatter
-
-from pylab import cm as pcm
-
-# mpl.use("WXAgg")
-
-
 try:
     from SpecClient_gevent import SpecCommand
 except ImportError:
@@ -56,9 +57,11 @@ except ImportError:
 if sys.version_info.major == 3:
     from . import generaltools as GT
     from . IOLaueTools import ReadSpec
+    from . import MessageCommand as MC
 else:
     import generaltools as GT
     from IOLaueTools import ReadSpec
+    import MessageCommand as MC
 
 import wx.lib.agw.customtreectrl as CT
 
@@ -227,72 +230,13 @@ class TreePanel(wx.Panel):
         print("self.set_selected_indices", self.set_selected_indices)
 
 
-# --- ---------------  Plot limits board  parameters
-class MessageCommand(wx.Dialog):
-    """
-    Class to command with spec
-    """
-
-    def __init__(self, parent, _id, title, sentence=None, speccommand=None, specconnection=None):
-        """
-        initialize board window
-        """
-        wx.Dialog.__init__(self, parent, _id, title, size=(400, 250))
-
-        self.parent = parent
-        #print("self.parent", self.parent)
-
-        self.speccommand = speccommand
-
-        txt1 = wx.StaticText(self, -1, "%s\n\n%s" % (sentence, self.speccommand))
-
-        acceptbtn = wx.Button(self, -1, "OK")
-        tospecbtn = wx.Button(self, -1, "Send to Spec")
-        cancelbtn = wx.Button(self, -1, "Cancel")
-
-        acceptbtn.Bind(wx.EVT_BUTTON, self.onAccept)
-        cancelbtn.Bind(wx.EVT_BUTTON, self.onCancel)
-        tospecbtn.Bind(wx.EVT_BUTTON, self.onCommandtoSpec)
-
-        btnssizer = wx.BoxSizer(wx.HORIZONTAL)
-        btnssizer.Add(acceptbtn, 0, wx.ALL)
-        btnssizer.Add(cancelbtn, 0, wx.ALL)
-        btnssizer.Add(tospecbtn, 0, wx.ALL)
-
-        vbox = wx.BoxSizer(wx.VERTICAL)
-        vbox.Add(txt1)
-        vbox.Add(btnssizer)
-        self.SetSizer(vbox)
-
-    def onAccept(self, _):
-
-        self.Close()
-
-    def onCancel(self, _):
-
-        # todo save old positions and make inverse mvt
-        self.Close()
-
-    def onCommandtoSpec(self, _):
-
-
-        myspec = SpecCommand.SpecCommand("", "crg1:laue")
-
-        print("Sending command : " + self.speccommand)
-
-        myspec.executeCommand(self.speccommand)
-
-        self.Close()
-
-
 class MainFrame(wx.Frame):
     """
-    Class to show CCD frame pixel intensities
-    and provide tools for searching peaks
+    Class main GUI
     """
 
-    def __init__(self, parent, _id, title, size=4):
-        wx.Frame.__init__(self, parent, _id, title, size=(600, 1000))
+    def __init__(self, parent, _id, title):
+        wx.Frame.__init__(self, parent, _id, title, size=(700, 500))
 
         self.folderpath_specfile, self.specfilename = None, None
 
@@ -300,8 +244,9 @@ class MainFrame(wx.Frame):
         self.detectorname_ascan = "Monitor"
         self.columns_name = ["Monitor", "fluoHg"]
         self.normalizeintensity = False
-
+            
         self.createMenuBar()
+
         self.create_main_panel()
 
         self.listmesh = None
@@ -1827,7 +1772,7 @@ class ImshowPanel(wx.Panel):
                     wx.MessageBox(sentence + "\n" + command, "INFO")
 
                 # WARNING could do some instabilities to station ??
-                msgdialog = MessageCommand(self, -1, "motors command",
+                msgdialog = MC.MessageCommand(self, -1, "motors command",
                     sentence=sentence, speccommand=command, specconnection=None)
                 msgdialog.ShowModal()
 
@@ -2264,6 +2209,15 @@ class MyApp(wx.App):
         return True
 
 
+def start():
+    """ launcher of plotmeshspecGUI as module"""
+    GUIApp = wx.App()
+    frame = MainFrame(None, -1, "plotmeshspecGUI.py")
+    frame.Show()
+    GUIApp.MainLoop()
+
+
 if __name__ == "__main__":
-    app = MyApp(0)
-    app.MainLoop()
+    start()
+
+

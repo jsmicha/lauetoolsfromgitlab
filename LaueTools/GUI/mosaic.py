@@ -58,7 +58,7 @@ if sys.version_info.major == 3:
     from .. import generaltools as GT
     from .. import readmccd as RMCCD
     from . import Plot1DFrame as PLOT1D
-    from .. import plotmeshspecGUI as PMSG
+    from .. import MessageCommand as MC
     from .. import IOimagefile as IOimage
     from .. import imageprocessing as ImProc
 else:
@@ -66,7 +66,7 @@ else:
     import generaltools as GT
     import readmccd as RMCCD
     import Plot1DFrame as PLOT1D
-    import plotmeshspecGUI as PMSG
+    import MessageCommand as MC
     import IOimagefile as IOimage
     import imageprocessing as ImProc
 
@@ -2084,7 +2084,7 @@ class ImshowFrame(wx.Frame):
 
             #                     wx.MessageBox(sentence, 'INFO')
 
-            msgdialog = PMSG.MessageCommand(self,
+            msgdialog = MC.MessageCommand(self,
                                             -1,
                                             "motors command",
                                             sentence=sentence,
@@ -2981,7 +2981,8 @@ def buildMosaic3(dict_param, outputfolder, ccdlabel="MARCCD165", plot=1, parent=
                 label = np.repeat(jj, n2 * n3, axis=1).reshape((n0, n1, n2, n3))
 
                 #                print 'label', label
-
+                #
+                # max value of background
                 datminimum = scind.measurements.maximum(mosaic, label, np.arange(n0 * n1))
                 datminimums = np.repeat(datminimum.reshape((n0, n1)), n2 * n3, axis=1).reshape((n0, 
                                                                                         n1, n2, n3))
@@ -3668,17 +3669,16 @@ def CollectData_oneImage(param, outputfolder, ccdlabel="MARCCD165",
 
     if selectedcounters have  Imean_multiple, Imax_multiple, Iptp_multiple, then array will subdivided
     according to nbdivsions = (n1,n2) ie n1*n2 subarrays.
-    n1 divisions along slow axis (Y, vert), n2 along fast axis (X, horiz) 
+    n1 divisions along slow axis (Y, vert), n2 along fast axis (X, horiz)
 
     param  = (dirname, filename, imageindex, peaklist, boxsize_row, boxsize_line)
 
-    peaklist : list of pixel X pixel Y (horiz, vert)   . For multiple detector : box around [[X, Y]] will be split 
+    peaklist : list of pixel X pixel Y (horiz, vert)   . For multiple detector : box around [[X, Y]] will be split
     boxsize_row = half boxsize (in pixel) // pixel X axis horiz
     boxsize_line = half boxsize (in pixel) // pixel Y axis vert
-    
     """
     (dirname, filename, imageindex, peaklist, boxsize_row, boxsize_line) = param
-    
+
     #    print "selectedcounters", selectedcounters
 
     nbpeaks = len(peaklist)
@@ -3699,10 +3699,10 @@ def CollectData_oneImage(param, outputfolder, ccdlabel="MARCCD165",
         if 'multiple' not in counter: 
             CountersData[counter] = np.zeros(nbpeaks)
         else:
-            ny,nx = ndivisions
-            CountersData[counter] = np.zeros((nbpeaks,nx*ny))
+            ny, nx = ndivisions
+            CountersData[counter] = np.zeros((nbpeaks, nx*ny))
 
-            CountersData["posmax_multiple"] = np.zeros((nbpeaks,nx*ny,2))
+            CountersData["posmax_multiple"] = np.zeros((nbpeaks, nx*ny, 2))
     CountersData["Monitor"] = 1.0
     CountersData["ExposureTime"] = 1000.0  # milliseconds
 
